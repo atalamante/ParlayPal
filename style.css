@@ -1,0 +1,91 @@
+:root{
+    --primary: #85BB65; /* Pistachio */
+    --light: #FFEDE1;   /* Linen */
+    --dark: #28262C;   /* Raisin Black */
+}
+
+* {
+    padding: 0;
+    margin: 0;
+    text-decoration: none;
+    list-style: none;
+    box-sizing: border-box;
+    /* background-color: #28262C; */
+}
+
+body {
+    font-family: montserrat;
+}
+
+nav {
+    background: var(--dark);
+    height: 80px;
+    width: 100%;
+}
+
+label.logo{
+    color: var(--primary);
+    font-size: 35px;
+    line-height: 80px;
+    padding: 0 25px;
+    font-weight: bold;
+}
+
+nav ul {
+    float: right;
+    margin-right: 20px;
+}
+
+nav ul li {
+    display: inline-block;
+    line-height: 80px;
+    margin: 0 5px;
+}
+
+nav ul li a {
+    color: var(--primary);
+    font-size: 17px;
+    text-transform: uppercase;
+}
+
+a.active, a:hover {
+    background-color: var(--light);
+    transition: .5s;
+
+}
+
+.tabs {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 400px;
+    font-family: montserrat;
+}
+
+.tabs__label {
+    padding: 10px 16px;
+    cursor: pointer;
+}
+
+.tabs__radio {
+    display: none;   
+}
+
+.tabs__content {
+    order: 1;
+    width: 100%;
+    border-bottom: 3px solid #dddddd;
+    line-height: 1.5;
+    font-size: 0.9em;
+    display: none;
+}
+
+.tabs__radio:checked + .tabs__label {
+    font-weight: bold;
+    color: #009578;
+    border-bottom: 2px solid #009578;
+  }
+
+  .tabs__radio:checked + .tabs__label + .tabs__content {
+    display: initial;
+  }
+

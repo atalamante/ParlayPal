@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bet Tracker</title>
+    <link rel = "stylesheet" type = "text/css" href = "style.css" />
+</head>
+<body>
+    <nav>
+        <label class = "logo">ParlayPal</label>
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Log In</a></li>
+            <li><a href="#">Sign Up</a></li>
+        </ul>
+    </nav>
+    <div class = "tabs">
+        <input type = "radio" class = "tabs__radio" name = "sportsTabs" id = "nbaTab" checked>
+        <label for="nbaTab" class="tabs__label">NBA</label>
+        <div class="tabs__content">
+            <table id = "nbaTable">
+                <thead>
+                    <th>Game</th>
+                    <th>Spread</th>
+                    <th>Score</th>
+                </thead>
+            </table>
+        </div>
+        <input type = "radio" class = "tabs__radio" name = "sportsTabs" id = "mlbTab">
+        <label for="mlbTab" class="tabs__label">MLB</label>
+        <div class="tabs__content">
+            <table id = "mlbTable">
+                <thead>
+                    <th>Game</th>
+                    <th>Spread</th>
+                    <th>Score</th>
+                </thead>
+            </table>
+        </div>
+        <input type = "radio" class = "tabs__radio" name = "sportsTabs" id = "wnbaTab">
+        <label for="wnbaTab" class="tabs__label">WNBA</label>
+        <div class="tabs__content">
+            <table id = "wnbaTable">
+                <thead>
+                    <th>Game</th>
+                    <th>Spread</th>
+                    <th>Score</th>
+                </thead>
+            </table>
+        </div>
+        <input type = "radio" class = "tabs__radio" name = "sportsTabs" id = "nhlTab">
+        <label for="nhlTab" class="tabs__label">NHL</label>
+        <div class="tabs__content">
+            <table id = "nhlTable">
+                <thead>
+                    <th>Game</th>
+                    <th>Spread</th>
+                    <th>Score</th>
+                </thead>
+            </table>
+        </div>
+    </div>
+    <script src="espnData.js"></script>
+</body>
+</html>
