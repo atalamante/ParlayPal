@@ -1,153 +1,136 @@
-:root{
-    --primary: #85BB65; /* Pistachio */
-    --light: #FFEDE1;   /* Linen */
-    --dark: #28262C;   /* Raisin Black */
+:root {
+  --primary: #85BB65;
+  /* Pistachio */
+  --light: #FFEDE1;
+  /* Linen */
+  --dark: #28262C;
+  /* Raisin Black */
 }
 
 * {
-    padding: 0;
-    margin: 0;
-    text-decoration: none;
-    list-style: none;
-    box-sizing: border-box;
-    /* background-color: #28262C; */
+  padding: 0;
+  margin: 0;
+  text-decoration: none;
+  list-style: none;
+  box-sizing: border-box;
+  /* background-color: #28262C; */
 }
 
 body {
-    font-family: montserrat;
+  font-family: montserrat;
 }
 
 nav {
-    background: var(--dark);
-    height: 80px;
-    width: 100%;
+  background: var(--dark);
+  height: 80px;
+  width: 100%;
 }
 
-label.logo{
-    color: var(--primary);
-    font-size: 35px;
-    line-height: 80px;
-    padding: 0 25px;
-    font-weight: bold;
+label.logo {
+  color: var(--primary);
+  font-size: 35px;
+  line-height: 80px;
+  padding: 0 25px;
+  font-weight: bold;
 }
 
 nav ul {
-    float: right;
-    margin-right: 20px;
+  float: right;
+  margin-right: 20px;
 }
 
 nav ul li {
-    display: inline-block;
-    line-height: 80px;
-    margin: 0 5px;
+  display: inline-block;
+  line-height: 80px;
+  margin: 0 5px;
 }
 
 nav ul li a {
-    color: var(--primary);
-    font-size: 17px;
-    text-transform: uppercase;
+  color: var(--primary);
+  font-size: 17px;
+  text-transform: uppercase;
 }
 
-a.active, a:hover {
-    background-color: var(--light);
-    transition: .5s;
+a.active,
+a:hover {
+  background-color: var(--light);
+  transition: .5s;
 
 }
 
-/* .tabs {
-    display: flex;
-    flex-wrap: wrap;
-    max-width: 400px;
-    font-family: montserrat;
+.tabs {
+  margin-bottom: 20px;
 }
 
-.tabs__label {
-    padding: 10px 16px;
-    cursor: pointer;
+.tab-links {
+  display: flex;
+  justify-content: flex-start;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-.tabs__radio {
-    display: none;   
+.tab-link {
+  padding: 10px 20px;
+  background-color: #f0f0f0;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-size: 16px;
+  cursor: pointer;
 }
 
-.tabs__content {
-    order: 1;
-    width: 100%;
-    border-bottom: 3px solid #dddddd;
-    line-height: 1.5;
-    font-size: 0.9em;
-    display: none;
+.tab-link.active {
+  border-bottom: 2px solid #000;
 }
 
-.tabs__radio:checked + .tabs__label {
-    font-weight: bold;
-    color: #009578;
-    border-bottom: 2px solid #009578;
-  }
+.tab-content {
+  display: none;
+}
 
-  .tabs__radio:checked + .tabs__label + .tabs__content {
-    display: initial;
-  } */
+.tab-content.active {
+  display: block;
+}
 
-  .tabs {
-    margin-bottom: 20px;
-  }
-  
-  .tab-links {
-    display: flex;
-    justify-content: flex-start;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .tab-link {
-    padding: 10px 20px;
-    background-color: #f0f0f0;
-    border: none;
-    border-bottom: 2px solid transparent;
-    font-size: 16px;
-    cursor: pointer;
-  }
-  
-  .tab-link.active {
-    border-bottom: 2px solid #000;
-  }
-  
-  .tab-content {
-    display: none;
-  }
-  
-  .tab-content.active {
-    display: block;
-  }
-  
-  .game-cards {
-    margin-top: 20px;
-  }
-  
-  .card {
-    background-color: #f9f9f9;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-bottom: 20px;
-    padding: 20px;
-    transition: transform 0.3s ease;
-    cursor: pointer;
-  }
+.game-cards {
+  margin-top: 20px;
+}
 
-  .card:hover {
-    transform: scale(1.01);
-  }
-  
-  .team-names {
-    font-size: 20px;
-    font-weight: bold;
-  }
-  
-  .spread,
-  .time {
-    font-size: 14px;
-    margin-top: 10px;
-  }
+.card {
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  padding: 20px;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
 
+.card.active {
+  background-color: #d1e9ff;
+}
+
+.card.finished {
+  background-color: #e6e6e6;
+}
+
+.card:hover {
+  transform: scale(1.01);
+}
+
+.team-names {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.spread,
+.time {
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.score {
+  float: right;
+  font-weight: bold;
+  color: #555;
+  font-size: 20px;
+}

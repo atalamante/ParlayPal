@@ -43,7 +43,7 @@ function updateTableHelper(currTable, currGame) {
         gameSpread.innerText = "-----"
     }
     let gameID = currGame.status.type.id;
-    switch(gameID){
+    switch (gameID) {
         case "1": // Scheduled Game. Hasn't started yet.
             gameScore.innerText = "------";
             break;
@@ -51,7 +51,7 @@ function updateTableHelper(currTable, currGame) {
             gameScore.innerText = currGame.competitions[0].competitors[1].score + " - " + currGame.competitions[0].competitors[0].score;
             break;
         case "3": // Completed. 
-            gameScore.innerText =  currGame.competitions[0].competitors[1].score + " - " + currGame.competitions[0].competitors[0].score;
+            gameScore.innerText = currGame.competitions[0].competitors[1].score + " - " + currGame.competitions[0].competitors[0].score;
             break;
         case "4":
             gameScore.innerText = "Forfeit";
@@ -73,9 +73,9 @@ function callAPISpecificTime() {
     var now = new Date();
     var millisTill12 = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 24, 00) - now;
     if (millisTill12 < 0) {
-        millisTill12 += 86400000; 
+        millisTill12 += 86400000;
     }
-    setTimeout(function(){
+    setTimeout(function () {
         alert("It's 11:22!")
     }, millisTill12);
 
@@ -92,8 +92,44 @@ function createGameObjects(currGame) {
         spreadHolder = "-----";
     }
     gametime = new Date(currGame.date);
-    var currGameObject = {teamHome: currGame.competitions[0].competitors[0].team.displayName, teamAway:currGame.competitions[0].competitors[1].team.displayName,   
-                            spread: spreadHolder, time: gametime.toLocaleTimeString('en-US'), shortName: currGame.shortName};
+    switch (currGame.status.type.id) {
+        case "1": // Scheduled Game. Hasn't started yet.
+            var currGameObject = {
+                teamHome: currGame.competitions[0].competitors[0].team.displayName, teamAway: currGame.competitions[0].competitors[1].team.displayName,
+                spread: spreadHolder, teamHomeScore: 0, teamAwayScore: 0, time: gametime.toLocaleTimeString('en-US'), shortName: currGame.shortName, gameID: currGame.status.type.id
+            };
+            break;
+        case "2": // Live Game
+            homeScore = currGame.competitions[0].competitors[0].score;
+            awayScore = currGame.competitions[0].competitors[1].score;
+            console.log(awayScore);
+            console.log(homeScore);
+            var currGameObject = {
+                teamHome: currGame.competitions[0].competitors[0].team.displayName, teamAway: currGame.competitions[0].competitors[1].team.displayName,
+                spread: spreadHolder, teamHomeScore: homeScore, teamAwayScore: awayScore, time: gametime.toLocaleTimeString('en-US'), shortName: currGame.shortName, gameID: currGame.status.type.id
+            };
+            break;
+        case "3": // Completed. 
+            homeScore = currGame.competitions[0].competitors[0].score;
+            awayScore = currGame.competitions[0].competitors[1].score;
+            var currGameObject = {
+                teamHome: currGame.competitions[0].competitors[0].team.displayName, teamAway: currGame.competitions[0].competitors[1].team.displayName,
+                spread: spreadHolder, teamHomeScore: homeScore, teamAwayScore: awayScore, time: gametime.toLocaleTimeString('en-US'), shortName: currGame.shortName, gameID: currGame.status.type.id
+            };
+            break;
+        case "4":
+            gameScore.innerText = "Forfeit";
+        case "5":
+            gameScore.innerText = "Cancelled";
+        case "6":
+            gameScore.innerText = "Postponed";
+        case "7":
+            gameScore.innerText = "Delayed";
+        case "8":
+            gameScore.innerText = "Suspended";
+        default:
+            gameScore.innerText = "Other"
+    }
     return currGameObject;
 }
 
@@ -102,6 +138,13 @@ function dynamicGameCards(sportSpecificList, sport) {
     for (const game of sportSpecificList) {
         const singleCard = document.createElement("div");
         singleCard.classList.add("card");
+        if (game.gameID == "1") {
+            singleCard.classList.add("scheduled");
+        } else if (game.gameID == "2") {
+            singleCard.classList.add("active");
+        } else if (game.gameID == "3"){
+            singleCard.classList.add("finished");
+        }
 
         const nameOfTeams = document.createElement("h2");
         nameOfTeams.classList.add("team-names");
@@ -115,7 +158,17 @@ function dynamicGameCards(sportSpecificList, sport) {
         gameTime.classList.add("time");
         gameTime.textContent = `Time: ${game.time}`;
 
+        const currScore = document.createElement("p");
+        currScore.classList.add("score");
+        if (game.gameID == "2" || game.gameID == "3") {
+            currScore.textContent = `Score: ${game.teamAwayScore} - ${game.teamHomeScore}`;
+        } else {
+            currScore.textContent = "";
+        }
+
+
         singleCard.appendChild(nameOfTeams);
+        singleCard.appendChild(currScore);
         singleCard.appendChild(spread);
         singleCard.appendChild(gameTime);
 
@@ -125,7 +178,7 @@ function dynamicGameCards(sportSpecificList, sport) {
             const spread = game.spread;
             const startTime = game.time;
 
-            console.log(`Clicked card: ${awayTeam} vs ${homeTeam}, Spread: ${spread}, Start Time: ${startTime}`);
+            console.log(`Clicked card: ${awayTeam} vs ${homeTeam}, Spread: ${spread}, Start Time: ${startTime}`, `Score: ${game.teamAwayScore} - ${game.teamHomeScore}`);
         })
 
         containerForGameCards.appendChild(singleCard);
@@ -136,7 +189,7 @@ function switchingTabs(event) {
     const tabClicked = event.target;
     const sport = tabClicked.dataset.sport;
 
-      // Remove 'active' class from all tabs and tab contents
+    // Remove 'active' class from all tabs and tab contents
     const tabs = document.querySelectorAll('.tab-link');
     const tabContents = document.querySelectorAll('.tab-content');
 

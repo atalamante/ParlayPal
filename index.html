@@ -1,51 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bet Tracker</title>
-    <link rel = "stylesheet" type = "text/css" href = "style.css" />
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bet Tracker</title>
+  <link rel="stylesheet" type="text/css" href="style.css" />
 </head>
+
 <body>
-    <nav>
-        <label class = "logo">ParlayPal</label>
-        <ul>
-            <li><a href="#">Home</a></li>
-            <li><a href="#">Log In</a></li>
-            <li><a href="#">Sign Up</a></li>
-        </ul>
-    </nav>
-    <div class = "tabs">
-        <div class="tabs">
-            <button class="tab-link active" data-sport="nba">NBA</button>
-            <button class="tab-link" data-sport="mlb">MLB</button>
-            <button class="tab-link" data-sport="nhl">NHL</button>
-            <button class="tab-link" data-sport="wnba">WNBA</button>
-            <!-- Add more tab buttons for other sports -->
-        
-            <div class="tab-content" data-sport="nba">
-              <div class="game-cards">
-                <!-- NBA game cards will be dynamically generated here -->
-              </div>
-            </div>
-            <div class="tab-content" data-sport="mlb">
-              <div class="game-cards">
-                <!-- MLB game cards will be dynamically generated here -->
-              </div>
-            </div>
-            <div class="tab-content" data-sport="nhl">
-                <div class="game-cards">
-                  <!-- NHL game cards will be dynamically generated here -->
-                </div>
-            </div>
-            <div class="tab-content" data-sport="wnba">
-                <div class="game-cards">
-                  <!-- WNBA game cards will be dynamically generated here -->
-                </div>
-            </div>
-          </div>
+  <nav>
+    <label class="logo">ParlayPal</label>
+    <ul>
+      <li><a href="#">Home</a></li>
+      <li><a href="#">Log In</a></li>
+      <li><a href="#">Sign Up</a></li>
+    </ul>
+  </nav>
+  <div class="tabs">
+    <div class="tabs">
+      <button class="tab-link active" data-sport="nba">NBA</button>
+      <button class="tab-link" data-sport="mlb">MLB</button>
+      <button class="tab-link" data-sport="nhl">NHL</button>
+      <button class="tab-link" data-sport="wnba">WNBA</button>
+      <!-- Add more tab buttons for other sports -->
+
+      <div class="tab-content" data-sport="nba">
+        <div class="game-cards">
+          <!-- NBA game cards will be dynamically generated here -->
+        </div>
+      </div>
+      <div class="tab-content" data-sport="mlb">
+        <div class="game-cards">
+          <!-- MLB game cards will be dynamically generated here -->
+        </div>
+      </div>
+      <div class="tab-content" data-sport="nhl">
+        <div class="game-cards">
+          <!-- NHL game cards will be dynamically generated here -->
+        </div>
+      </div>
+      <div class="tab-content" data-sport="wnba">
+        <div class="game-cards">
+          <!-- WNBA game cards will be dynamically generated here -->
+        </div>
+      </div>
     </div>
-    <script src="espnData.js"></script>
+  </div>
+  <script src="espnData.js"></script>
 </body>
+
 </html>
