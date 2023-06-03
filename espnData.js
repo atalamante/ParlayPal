@@ -21,36 +21,12 @@ function getDate() {
     return properDateFormat;
 }
 
-async function parseMLBGameSlates() {
-    mlbGameSlateInfo = await getScores(pathForMLBScores);
-    let mlbTable = document.getElementById("mlbTable");
-    for (var game = 0; game < mlbGameSlateInfo.length; game++) {
-        updateTableHelper(mlbTable, mlbGameSlateInfo[game]);
+async function parseGameSlates(sportSpecificPath, sportSpecificList) {
+    sportGameSlateInfo = await getScores(sportSpecificPath);
+    for (var game = 0; game < sportGameSlateInfo.length; game++) {
+        sportSpecificList.push(createGameObjects(sportGameSlateInfo[game]));
     }
-}
-
-async function parseNBAGameSlate() {
-    gameSlateInfo = await getScores(pathForNBAScores);
-    let nbaTable = document.getElementById("nbaTable");
-    for (var game = 0; game < gameSlateInfo.length; game++) {
-        updateTableHelper(nbaTable, gameSlateInfo[game]);
-    }
-}
-
-async function parseWNBAGameSlate() {
-    gameSlateInfo = await getScores(pathForWNBAScores);
-    let wnbaTable = document.getElementById("wnbaTable");
-    for (var game = 0; game < gameSlateInfo.length; game++) {
-        updateTableHelper(wnbaTable, gameSlateInfo[game]);
-    }
-}
-
-async function parseNHLGameSlate() {
-    gameSlateInfo = await getScores(pathForNHLScores);
-    let nhlTable = document.getElementById("nhlTable");
-    for (var game = 0; game < gameSlateInfo.length; game++) {
-        updateTableHelper(nhlTable, gameSlateInfo[game]);
-    }
+    console.log(sportSpecificList);
 }
 
 function updateTableHelper(currTable, currGame) {
@@ -105,8 +81,119 @@ function callAPISpecificTime() {
 
 }
 
-parseNBAGameSlate();
-parseMLBGameSlates();
-parseWNBAGameSlate();
-parseNHLGameSlate();
+// TODO: Read in the games into object format where a single game object contains: team1, team2, spread, time. 
+// Eventually, post these games to database. For now, need to just get an array containing all game objects.
+// Once we have all the games, need to populate "game cards" inside the tabs. 
+
+function createGameObjects(currGame) {
+    if (currGame.competitions[0].hasOwnProperty('odds')) {
+        spreadHolder = currGame.competitions[0].odds[0].details;
+    } else {
+        spreadHolder = "-----";
+    }
+    gametime = new Date(currGame.date);
+    var currGameObject = {teamHome: currGame.competitions[0].competitors[0].team.displayName, teamAway:currGame.competitions[0].competitors[1].team.displayName,   
+                            spread: spreadHolder, time: gametime.toLocaleTimeString('en-US'), shortName: currGame.shortName};
+    return currGameObject;
+}
+
+function dynamicGameCards(sportSpecificList, sport) {
+    const containerForGameCards = document.querySelector(`.tab-content[data-sport="${sport}"] .game-cards`);
+    for (const game of sportSpecificList) {
+        const singleCard = document.createElement("div");
+        singleCard.classList.add("card");
+
+        const nameOfTeams = document.createElement("h2");
+        nameOfTeams.classList.add("team-names");
+        nameOfTeams.textContent = `${game.teamAway} vs ${game.teamHome}`;
+
+        const spread = document.createElement("p");
+        spread.classList.add("spread");
+        spread.textContent = `Spread: ${game.spread}`;
+
+        const gameTime = document.createElement("p");
+        gameTime.classList.add("time");
+        gameTime.textContent = `Time: ${game.time}`;
+
+        singleCard.appendChild(nameOfTeams);
+        singleCard.appendChild(spread);
+        singleCard.appendChild(gameTime);
+
+        singleCard.addEventListener("click", () => {
+            const homeTeam = game.teamHome;
+            const awayTeam = game.teamAway;
+            const spread = game.spread;
+            const startTime = game.time;
+
+            console.log(`Clicked card: ${awayTeam} vs ${homeTeam}, Spread: ${spread}, Start Time: ${startTime}`);
+        })
+
+        containerForGameCards.appendChild(singleCard);
+    }
+}
+
+function switchingTabs(event) {
+    const tabClicked = event.target;
+    const sport = tabClicked.dataset.sport;
+
+      // Remove 'active' class from all tabs and tab contents
+    const tabs = document.querySelectorAll('.tab-link');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach((tab) => tab.classList.remove('active'));
+    tabContents.forEach((content) => content.classList.remove('active'));
+
+    // Add 'active' class to clicked tab and its corresponding tab content
+    tabClicked.classList.add('active');
+    const selectedTabContent = document.querySelector(`.tab-content[data-sport="${sport}"]`);
+    selectedTabContent.classList.add('active');
+
+    // Retrieve the game array based on the selected sport and generate game cards
+    let gameArray;
+    switch (sport) {
+        case 'nba':
+            gameArray = NBAGameList;
+            break;
+        case 'mlb':
+            gameArray = MLBGameList;
+            break;
+        case 'nhl':
+            gameArray = NHLGameList;
+            break;
+        case 'wnba':
+            gameArray = WNBAGameList
+            break;
+        default:
+            gameArray = [];
+    }
+
+    // Clear the game cards container and generate new game cards
+    const gameCardsContainer = selectedTabContent.querySelector('.game-cards');
+    gameCardsContainer.innerHTML = '';
+    console.log("About to enter dynamic.");
+    console.log(gameArray);
+    console.log(sport)
+    dynamicGameCards(gameArray, sport);
+}
+
+function tabEventHandlingSetup() {
+    // Attach event listener to tab buttons
+    const tabLinks = document.querySelectorAll('.tab-link');
+    tabLinks.forEach((tab) => tab.addEventListener('click', switchingTabs));
+
+    // Show the initial tab (e.g., NBA) by triggering a click event
+    const initialTab = document.querySelector('.tab-link[data-sport="nba"]');
+    initialTab.click();
+}
+
+const NBAGameList = [];
+const MLBGameList = [];
+const NHLGameList = [];
+const WNBAGameList = [];
+const CBBGameList = [];
+parseGameSlates(pathForNBAScores, NBAGameList);
+parseGameSlates(pathForMLBScores, MLBGameList);
+parseGameSlates(pathForNHLScores, NHLGameList);
+parseGameSlates(pathForWNBAScores, WNBAGameList);
+tabEventHandlingSetup();
 // callAPISpecificTime();

@@ -54,7 +54,7 @@ a.active, a:hover {
 
 }
 
-.tabs {
+/* .tabs {
     display: flex;
     flex-wrap: wrap;
     max-width: 400px;
@@ -87,5 +87,67 @@ a.active, a:hover {
 
   .tabs__radio:checked + .tabs__label + .tabs__content {
     display: initial;
+  } */
+
+  .tabs {
+    margin-bottom: 20px;
+  }
+  
+  .tab-links {
+    display: flex;
+    justify-content: flex-start;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .tab-link {
+    padding: 10px 20px;
+    background-color: #f0f0f0;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .tab-link.active {
+    border-bottom: 2px solid #000;
+  }
+  
+  .tab-content {
+    display: none;
+  }
+  
+  .tab-content.active {
+    display: block;
+  }
+  
+  .game-cards {
+    margin-top: 20px;
+  }
+  
+  .card {
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    padding: 20px;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+  }
+
+  .card:hover {
+    transform: scale(1.01);
+  }
+  
+  .team-names {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .spread,
+  .time {
+    font-size: 14px;
+    margin-top: 10px;
   }
 
