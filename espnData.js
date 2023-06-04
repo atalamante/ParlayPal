@@ -117,18 +117,31 @@ function createGameObjects(currGame) {
                 spread: spreadHolder, teamHomeScore: homeScore, teamAwayScore: awayScore, time: gametime.toLocaleTimeString('en-US'), shortName: currGame.shortName, gameID: currGame.status.type.id
             };
             break;
-        case "4":
-            gameScore.innerText = "Forfeit";
-        case "5":
-            gameScore.innerText = "Cancelled";
-        case "6":
-            gameScore.innerText = "Postponed";
-        case "7":
-            gameScore.innerText = "Delayed";
-        case "8":
-            gameScore.innerText = "Suspended";
+        // case "4":
+        //     gameScore.innerText = "Forfeit";
+        // case "5":
+        //     gameScore.innerText = "Cancelled";
+        // case "6":
+        //     gameScore.innerText = "Postponed";
+        // case "7":
+        //     gameScore.innerText = "Delayed";
+        // case "8":
+        //     gameScore.innerText = "Suspended";
         default:
-            gameScore.innerText = "Other"
+            if (currGame.competitions[0].competitors[0].hasOwnProperty('score')) {
+                homeScore = currGame.competitions[0].competitors[0].score;
+                awayScore = currGame.competitions[0].competitors[1].score;
+                var currGameObject = {
+                    teamHome: currGame.competitions[0].competitors[0].team.displayName, teamAway: currGame.competitions[0].competitors[1].team.displayName,
+                    spread: spreadHolder, teamHomeScore: homeScore, teamAwayScore: awayScore, time: gametime.toLocaleTimeString('en-US'), shortName: currGame.shortName, gameID: currGame.status.type.id
+                };
+            } else {
+                var currGameObject = {
+                    teamHome: currGame.competitions[0].competitors[0].team.displayName, teamAway: currGame.competitions[0].competitors[1].team.displayName,
+                    spread: spreadHolder, teamHomeScore: "0", teamAwayScore: "0", time: gametime.toLocaleTimeString('en-US'), shortName: currGame.shortName, gameID: currGame.status.type.id
+                };
+            }
+            break;
     }
     return currGameObject;
 }

@@ -1,0 +1,22 @@
+{
+  "name": "bettingtrackerproject",
+  "version": "1.0.0",
+  "description": "",
+  "main": "espnData.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/atalamante/ParlayPal.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/atalamante/ParlayPal/issues"
+  },
+  "homepage": "https://github.com/atalamante/ParlayPal#readme",
+  "dependencies": {
+    "mongoose": "^7.2.2"
+  }
+}
