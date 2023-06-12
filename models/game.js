@@ -1,44 +1,17 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
-const singleGameSchema = new mongoose.Schema({
-    sport:{
-        type: String,
-        required: true,
-    },
-    date:{
+const gameByDatesSchema = new mongoose.Schema({
+    date: {
         type: Date,
-        required: true,
     },
-    homeTeam: {
-        type: String,
-        required:true,
-    },
-    awayTeam: {
-        type:String,
-        required:true,
-    },
-    startTime: {
-        type:Date,
-        required:true,
-    },
-    status: {
-        type: String,
-        required: true,
-    },
-    homeTeamScore: {
-        type: Number,
-        default: null,
-    },
-    awayTeamScore: {
-        type: Number,
-        default: null,
-    },
-    winner: {
-        type: String,
-        default: null
-    }
+    sports: [
+        {
+            type: mongoose.Schema.Types.Mixed,
+            default: {},
+        },
+    ],
 });
 
-const Game = mongoose.model('Game', singleGameSchema);
+const Game = mongoose.model("Game", gameByDatesSchema);
 
-module.exports = Game;
+export default Game;
