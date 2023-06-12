@@ -18,34 +18,39 @@
       <li><a href="signup/signup.html">Sign Up</a></li>
     </ul>
   </nav>
-  <div class="tabs">
-    <div class="tabs">
-      <button class="tab-link active" data-sport="nba">NBA</button>
-      <button class="tab-link" data-sport="mlb">MLB</button>
-      <button class="tab-link" data-sport="nhl">NHL</button>
-      <button class="tab-link" data-sport="wnba">WNBA</button>
-      <!-- Add more tab buttons for other sports -->
+  <div class="container">
+    <div class="schedule">
+      <div class="tabs">
+        <button class="tab-link active" data-sport="nba">NBA</button>
+        <button class="tab-link" data-sport="mlb">MLB</button>
+        <button class="tab-link" data-sport="nhl">NHL</button>
+        <button class="tab-link" data-sport="wnba">WNBA</button>
+        <!-- Add more tab buttons for other sports -->
 
-      <div class="tab-content" data-sport="nba">
-        <div class="game-cards">
-          <!-- NBA game cards will be dynamically generated here -->
+        <div class="tab-content" data-sport="nba">
+          <div class="game-cards">
+            <!-- NBA game cards will be dynamically generated here -->
+          </div>
+        </div>
+        <div class="tab-content" data-sport="mlb">
+          <div class="game-cards">
+            <!-- MLB game cards will be dynamically generated here -->
+          </div>
+        </div>
+        <div class="tab-content" data-sport="nhl">
+          <div class="game-cards">
+            <!-- NHL game cards will be dynamically generated here -->
+          </div>
+        </div>
+        <div class="tab-content" data-sport="wnba">
+          <div class="game-cards">
+            <!-- WNBA game cards will be dynamically generated here -->
+          </div>
         </div>
       </div>
-      <div class="tab-content" data-sport="mlb">
-        <div class="game-cards">
-          <!-- MLB game cards will be dynamically generated here -->
-        </div>
-      </div>
-      <div class="tab-content" data-sport="nhl">
-        <div class="game-cards">
-          <!-- NHL game cards will be dynamically generated here -->
-        </div>
-      </div>
-      <div class="tab-content" data-sport="wnba">
-        <div class="game-cards">
-          <!-- WNBA game cards will be dynamically generated here -->
-        </div>
-      </div>
+    </div>
+    <div class="parlay">
+      <div class="parlay-container"></div>
     </div>
   </div>
   <script src="/espnData.js"></script>

@@ -20,10 +20,32 @@ body {
   font-family: montserrat;
 }
 
+.container {
+  display: flex;
+  height: 100vh;
+}
+
 nav {
   background: var(--dark);
   height: 80px;
   width: 100%;
+}
+
+.schedule {
+  width: 100%;
+  overflow-y: auto;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: var(--primary);
+}
+
+.parlay {
+  display: none;
+  width: 30%;
+  overflow-y: auto;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: var(--dark);
 }
 
 label.logo {
