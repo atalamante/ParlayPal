@@ -47,7 +47,7 @@ function getDate() {
     var mm = String(today.getMonth() + 1).padStart(2, '0');
     var yyyy = today.getFullYear();
     // Proper Format: yyyymmdd
-    let properDateFormat = yyyy + mm + dd;
+    let properDateFormat = yyyy + mm + "13";
     return properDateFormat;
 }
 
@@ -66,6 +66,10 @@ async function parseGameSlates(sportSpecificPath, sportSpecificList, sport) {
 function createGameObjects(currGame, specificSport) {
     if (currGame.competitions[0].hasOwnProperty('odds')) {
         var spreadHolder = currGame.competitions[0].odds[0].details;
+        // For away team odds: .odds[0].awayTeamOdds.moneyLine
+        // For home team odds: .odds[0].homeTeamOdds.moneyLine
+        // var homeTeamOdds = currGame.competitions[0].odds[0].homeTeamOdds.moneyLine;
+        // var awayTeamOdds = currGame.competitions[0].odds[0].awayTeamOdds.moneyLine;
     } else {
         var spreadHolder = "-----";
     }

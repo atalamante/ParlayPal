@@ -26,6 +26,18 @@ async function makeCallToFetchX(sport) {
     return data;
 }
 
+function makeUnderDogSpread(shortName, spread) {
+    console.log(shortName.split(" "));
+    shortNameSplit = shortName.split(" ");
+    spreadSplit = spread.split(" ");
+    removeFavored = shortNameSplit.indexOf(spreadSplit[0]);
+    shortNameSplit.splice(removeFavored, 1);
+    console.log(shortNameSplit);
+    removeAtSymbol = shortNameSplit.indexOf("@");
+    shortNameSplit.splice(removeAtSymbol, 1);
+    return "+ " + shortNameSplit[0];
+}
+
 function updateParlayDisplay() {
     const parlayContainer = document.querySelector(".parlay-container");
     console.log("Parlay: ", parlay);
@@ -41,11 +53,11 @@ function updateParlayDisplay() {
         }
         const parlayItem = document.createElement('div');
         parlayItem.classList.add("card");
-        if (game.gameID == "1") {
+        if (game.status == "1") {
             parlayItem.classList.add("scheduled");
-        } else if (game.gameID == "2") {
+        } else if (game.status == "2") {
             parlayItem.classList.add("active");
-        } else if (game.gameID == "3"){
+        } else if (game.status == "3"){
             parlayItem.classList.add("finished");
         }
 
@@ -63,16 +75,39 @@ function updateParlayDisplay() {
 
         const currScore = document.createElement("p");
         currScore.classList.add("score");
-        if (game.gameID == "2" || game.gameID == "3") {
+        if (game.status == "2" || game.status == "3") {
             currScore.textContent = `Score: ${game.awayTeamScore} - ${game.homeTeamScore}`;
         } else {
             currScore.textContent = "";
         }
 
+        const oddsOption = document.createElement("div");
+        oddsOption.classList.add("oddsOption");
+
+        const favorLabel = document.createElement("label");
+        const favorRadio = document.createElement("input");
+        favorRadio.type = "radio";
+        favorRadio.name = `spread-${game.shortName}`;
+        favorRadio.value = "favor";
+        favorLabel.textContent = `${game.spread}`;
+        favorLabel.appendChild(favorRadio);
+        oddsOption.appendChild(favorLabel);
+
+        const underDogLabel = document.createElement("label");
+        const underDogRadio = document.createElement("input");
+        underDogRadio.type = "radio";
+        underDogRadio.name = `spread-${game.shortName}`;
+        underDogRadio.value = "underdog";
+        underDogSpread = makeUnderDogSpread(game.shortName, game.spread);
+        underDogLabel.textContent = underDogSpread;
+        underDogLabel.appendChild(underDogRadio);
+        oddsOption.appendChild(underDogLabel);
+
         parlayItem.appendChild(nameOfTeams);
         parlayItem.appendChild(currScore);
         parlayItem.appendChild(spread);
         parlayItem.appendChild(gameTime);
+        parlayItem.appendChild(oddsOption);
         
         parlayContainer.appendChild(parlayItem);
     }
@@ -103,11 +138,11 @@ function dynamicGameCards(sportSpecificList, sport) {
     for (const game of sportSpecificList) {
         const singleCard = document.createElement("div");
         singleCard.classList.add("card");
-        if (game.gameID == "1") {
+        if (game.status == "1") {
             singleCard.classList.add("scheduled");
-        } else if (game.gameID == "2") {
+        } else if (game.status == "2") {
             singleCard.classList.add("active");
-        } else if (game.gameID == "3"){
+        } else if (game.status == "3"){
             singleCard.classList.add("finished");
         }
 
@@ -125,12 +160,11 @@ function dynamicGameCards(sportSpecificList, sport) {
 
         const currScore = document.createElement("p");
         currScore.classList.add("score");
-        if (game.gameID == "2" || game.gameID == "3") {
+        if (game.status == "2" || game.status == "3") {
             currScore.textContent = `Score: ${game.awayTeamScore} - ${game.homeTeamScore}`;
         } else {
             currScore.textContent = "";
         }
-
 
         singleCard.appendChild(nameOfTeams);
         singleCard.appendChild(currScore);
