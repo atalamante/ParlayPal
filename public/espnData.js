@@ -6,18 +6,47 @@ pathForNHLScores = "http://site.api.espn.com/apis/site/v2/sports/hockey/nhl/scor
 pathToFetch = "localhost:5500/fetch";
 
 const parlay = [];
+const parlayContainer = document.querySelector(".parlay-container");
+const submitButton = document.getElementsByClassName("submit-button");
+console.log(submitButton);
+submitButton[0].addEventListener("click", handleSubmitParlay);
 
-// function callAPISpecificTime() {
-//     var now = new Date();
-//     var millisTill12 = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 24, 00) - now;
-//     if (millisTill12 < 0) {
-//         millisTill12 += 86400000;
-//     }
-//     setTimeout(function () {
-//         alert("It's 11:22!")
-//     }, millisTill12);
-// }
+function handleSubmitParlay() {
+    const parlayData = []
 
+    for (const currGame of parlay) {
+        const game = currGame[0];
+
+        let typeCheck = `bet-type-${game.shortName}`;
+        let valueCheck = `bet-value-${game.shortName}`;
+
+        const betType = document.querySelector(`[name = "${typeCheck}"]`).value;
+        // const betType = selectInput.value;
+
+        const betValue = document.querySelector(`[name = "${valueCheck}"]`).value;
+
+        let currGameObject = {};
+        let returnCurrGame = Object.assign(currGameObject, game);
+        returnCurrGame["betType"] = betType;
+        returnCurrGame["betValue"] = betValue;
+
+        parlayData.push(returnCurrGame);
+    }
+    console.log(parlayData);
+    removeParlayFromScreen();
+}
+
+function removeParlayFromScreen() {
+    parlay.length = 0;
+
+    const parlayDiv = document.querySelector(".parlay");
+    const scheduleContainer = document.querySelector(".schedule");
+
+    scheduleContainer.style.width = "100%";
+    parlayDiv.style.width = "0%";
+    parlayContainer.innerHTML = "";
+    parlayDiv.style.padding = "0";
+}
 
 async function makeCallToFetchX(sport) {
     let response = await fetch('/fetch' + sport);
@@ -26,20 +55,17 @@ async function makeCallToFetchX(sport) {
     return data;
 }
 
-function makeUnderDogSpread(shortName, spread) {
-    console.log(shortName.split(" "));
-    shortNameSplit = shortName.split(" ");
-    spreadSplit = spread.split(" ");
-    removeFavored = shortNameSplit.indexOf(spreadSplit[0]);
-    shortNameSplit.splice(removeFavored, 1);
-    console.log(shortNameSplit);
-    removeAtSymbol = shortNameSplit.indexOf("@");
-    shortNameSplit.splice(removeAtSymbol, 1);
-    return "+ " + shortNameSplit[0];
+function createTextInput(inputName) {
+    const input = document.createElement("input");
+    input.type = "text";
+    input.name = inputName;
+    input.maxLength = 10;
+    return input;
 }
 
 function updateParlayDisplay() {
     const parlayContainer = document.querySelector(".parlay-container");
+    console.log("Parlay Container at update: ", parlayContainer);
     console.log("Parlay: ", parlay);
 
     for (const currGame of parlay) {
@@ -65,6 +91,10 @@ function updateParlayDisplay() {
         nameOfTeams.classList.add("team-names");
         nameOfTeams.textContent = `${game.awayTeam} vs ${game.homeTeam}`;
 
+        const shortNameTeams = document.createElement("h4");
+        shortNameTeams.classList.add("short-team-names");
+        shortNameTeams.textContent = `${game.shortName}`;
+
         const spread = document.createElement("p");
         spread.classList.add("spread");
         spread.textContent = `Spread: ${game.spread}`;
@@ -81,34 +111,51 @@ function updateParlayDisplay() {
             currScore.textContent = "";
         }
 
-        const oddsOption = document.createElement("div");
-        oddsOption.classList.add("oddsOption");
+        const selectLabel = document.createElement("label");
+        selectLabel.textContent = "Choose Bet Type:";
+        const selectInput = document.createElement("select");
+        selectInput.name = `bet-type-${game.shortName}`;
 
-        const favorLabel = document.createElement("label");
-        const favorRadio = document.createElement("input");
-        favorRadio.type = "radio";
-        favorRadio.name = `spread-${game.shortName}`;
-        favorRadio.value = "favor";
-        favorLabel.textContent = `${game.spread}`;
-        favorLabel.appendChild(favorRadio);
-        oddsOption.appendChild(favorLabel);
+        const spreadOption = document.createElement("option");
+        spreadOption.value = "spread";
+        spreadOption.textContent = "Spread";
+        const moneylineOption = document.createElement("option");
+        moneylineOption.value = "moneyline";
+        moneylineOption.textContent = "Moneyline";
 
-        const underDogLabel = document.createElement("label");
-        const underDogRadio = document.createElement("input");
-        underDogRadio.type = "radio";
-        underDogRadio.name = `spread-${game.shortName}`;
-        underDogRadio.value = "underdog";
-        underDogSpread = makeUnderDogSpread(game.shortName, game.spread);
-        underDogLabel.textContent = underDogSpread;
-        underDogLabel.appendChild(underDogRadio);
-        oddsOption.appendChild(underDogLabel);
+        selectInput.appendChild(spreadOption);
+        selectInput.appendChild(moneylineOption);
+
+        const inputLabel = document.createElement("label");
+        inputLabel.textContent = "Enter Bet Value:";
+        const inputValue = createTextInput(`bet-value-${game.shortName}`);
+
+        const gridContainer = document.createElement("div");
+        gridContainer.classList.add("grid-container");
+
+        const rowA = document.createElement("div");
+        rowA.classList.add("grid-row");
+        rowA.appendChild(selectLabel);
+        rowA.appendChild(selectInput);
+
+        const rowB = document.createElement("div");
+        rowB.classList.add("grid-row");
+        rowB.appendChild(inputLabel);
+        rowB.appendChild(inputValue);
+
+        gridContainer.appendChild(rowA);
+        gridContainer.appendChild(rowB);
 
         parlayItem.appendChild(nameOfTeams);
+        parlayItem.appendChild(shortNameTeams);
         parlayItem.appendChild(currScore);
-        parlayItem.appendChild(spread);
+        // parlayItem.appendChild(spread);
         parlayItem.appendChild(gameTime);
-        parlayItem.appendChild(oddsOption);
-        
+        parlayItem.appendChild(gridContainer);
+
+        // console.log("Parlay Item: ", parlayItem);
+        console.log("Parlay container: ", parlayContainer);
+
         parlayContainer.appendChild(parlayItem);
     }
 }
@@ -126,8 +173,10 @@ function addToParlay(selectedGame) {
         if (parlay.length != 0) {
             parlayContainer.style.display = 'grid';
             scheduleContainer.style.width = '70%';
+            parlayContainer.style.width = "30%";
+            parlayContainer.style.padding = "20px";
         }
-
+        console.log("Before updateParlayDisplay: ", parlay);
         updateParlayDisplay();
     }
 }
@@ -150,6 +199,10 @@ function dynamicGameCards(sportSpecificList, sport) {
         nameOfTeams.classList.add("team-names");
         nameOfTeams.textContent = `${game.awayTeam} vs ${game.homeTeam}`;
 
+        const shortNameTeams = document.createElement("h4");
+        shortNameTeams.classList.add("short-team-names");
+        shortNameTeams.textContent = `${game.shortName}`;
+
         const spread = document.createElement("p");
         spread.classList.add("spread");
         spread.textContent = `Spread: ${game.spread}`;
@@ -167,6 +220,7 @@ function dynamicGameCards(sportSpecificList, sport) {
         }
 
         singleCard.appendChild(nameOfTeams);
+        singleCard.appendChild(shortNameTeams);
         singleCard.appendChild(currScore);
         singleCard.appendChild(spread);
         singleCard.appendChild(gameTime);
@@ -178,6 +232,7 @@ function dynamicGameCards(sportSpecificList, sport) {
             const startTime = game.startTime;
 
             console.log(`Clicked card: ${awayTeam} vs ${homeTeam}, Spread: ${spread}, Start Time: ${startTime}`, `Score: ${game.awayTeamScore} - ${game.homeTeamScore}`);
+            console.log("Before addToParlay: ", game);
             addToParlay(game);
         })
 

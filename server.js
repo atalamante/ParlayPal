@@ -47,7 +47,7 @@ function getDate() {
     var mm = String(today.getMonth() + 1).padStart(2, '0');
     var yyyy = today.getFullYear();
     // Proper Format: yyyymmdd
-    let properDateFormat = yyyy + mm + "13";
+    let properDateFormat = yyyy + mm + dd;
     return properDateFormat;
 }
 
