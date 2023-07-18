@@ -1,9 +1,11 @@
 import fetch from "node-fetch";
 import mongoose from "mongoose";
 import express from "express";
+import path from "path";
 import SingleGame from "./models/singleGame.js";
 import Game from "./models/game.js";
-import {MongoClient} from "mongodb";
+import {MongoClient, ObjectId} from "mongodb";
+import session from "express-session";
 
 const pathForNBAScores = "http://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates="
 const pathForMLBScores = "http://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard?dates="
@@ -18,6 +20,12 @@ const client = new MongoClient(url);
 
 const app = express();
 const port = 5500;
+
+app.use(session({
+    secret: "aaronSecret",
+    resave: false,
+    saveUninitialized: false
+}));
 
 async function dbConnect() {
     mongoose.connect("mongodb://localhost:27017/parlaypal", 
@@ -47,7 +55,7 @@ function getDate() {
     var mm = String(today.getMonth() + 1).padStart(2, '0');
     var yyyy = today.getFullYear();
     // Proper Format: yyyymmdd
-    let properDateFormat = yyyy + mm + dd;
+    let properDateFormat = yyyy + mm + "18";
     return properDateFormat;
 }
 
@@ -163,6 +171,7 @@ async function updateGameInDatabase(game) {
 }
 
 app.use(express.static('E:\\BettingTrackerProject\\public'));
+app.use(express.json());
 
 app.get('/fetchNBA', async (req, res) => {
     try {
@@ -214,6 +223,93 @@ app.get('/fetchWNBA', async (req, res) => {
 
 app.get('/', (req, res) => {
     res.sendFile('E:\\BettingTrackerProject\\index.html');
+});
+
+app.get('/login.html', (req, res) => {
+    res.sendFile("E:\\BettingTrackerProject\\login.html");
+});
+
+app.get('/signup.html', (req, res) => {
+    res.sendFile("E:\\BettingTrackerProject\\signup.html");
+});
+
+app.post('/signup', async (req, res) => {
+    console.log("Inside /signup!");
+    console.log(req.body);
+    const email = req.body.email;
+    const password = req.body.passwordConfirm;
+    
+    const db = client.db(dbName);
+    const usersCollection = db.collection("users");
+
+    try {
+        const existingUser = await  usersCollection.findOne({email});
+        if (existingUser) {
+            return res.status(400).json({error: "User already exists!"});
+        }
+        const newUser = {email, password, parlays:[]};
+        const result = await usersCollection.insertOne(newUser);
+        
+        console.log("New user created: ", result.insertedId);
+
+        req.session.userID = newUser._id;
+
+        return res.redirect('/');
+        // return res.status(201).json({message: "User created successfully!"});
+    } catch (error) {
+        console.error("Error saving user: ", error);
+        return res.status(500).json({error: "Failed to save user!"});
+    }
+});
+
+app.post("/login", async (req, res) => {
+    console.log("Inside /login");
+    console.log(req.body);
+    const email = req.body.email;
+    const password = req.body.password;
+    
+    const db = client.db(dbName);
+    const usersCollection = db.collection("users");
+
+    try {
+        const existingUser = await  usersCollection.findOne({email});
+        if (!existingUser || existingUser.password !== password) {
+            return res.status(401).json({error: "Invalid email or password!"});
+        }
+
+        req.session.userID = existingUser._id;
+
+        return res.redirect('/');
+    } catch (error) {
+        console.error("Error during login: ", error);
+        return res.status(500).json({error: "Failed to login user!"});
+    }
+
+});
+
+app.post("/createParlay", async (req, res) => {
+    const db = client.db(dbName);
+    const usersCollection = db.collection("users");
+
+    const userID = req.session.userID;
+
+    console.log("userID: ", userID);
+    
+    const user = await usersCollection.findOne({"_id": new ObjectId(userID)});
+
+    console.log("user: ", user);
+
+    const parlayData = req.body;
+
+    console.log(parlayData);
+
+    console.log("User Parlays: ", user.parlays);
+
+    user.parlays.push(parlayData);
+
+    await usersCollection.updateOne({_id: new ObjectId(userID)}, {$push: {parlays: parlayData}});
+
+    res.sendStatus(200);
 });
 
 app.listen(port);

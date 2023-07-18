@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ParlayPal Sign Up</title>
-    <link rel="stylesheet" type="text/css" href="signup.css">
+    <link rel="stylesheet" type="text/css" href="/signup.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 <body>
@@ -15,17 +15,17 @@
                 <header>Sign Up</header>
                 <form action="#">
                     <div class="field input-field">
-                        <input type="email" placeholder="Email" class="input">
+                        <input type="email" placeholder="Email" class="input", name = "emailInput">
                     </div>
                     <div class="field input-field">
-                        <input type="password" placeholder="Password" class="password">
+                        <input type="password" placeholder="Password" class="password", name = "passwordInput">
                     </div>
                     <div class="field input-field">
-                        <input type="password" placeholder="Password" class="password">
+                        <input type="password" placeholder="Password" class="password", name = "passwordConfirmInput">
                         <i class = "bx bxs-hide eye-icon"></i>
                     </div>
-                    <div class="field button-field">
-                        <button>Sign Up</button>
+                    <div class="field button-field" id = "submit-button">
+                        <button type="button">Sign Up</button>
                     </div>
                     <div class="form-link">
                         <span>Already have an account?<a href="./../login/login.html" class = "login-link">Log In</a></span>
@@ -34,5 +34,6 @@
             </div>
         </div>
     </section>
+    <script src = "/signup.js"></script>
 </body>
 </html>

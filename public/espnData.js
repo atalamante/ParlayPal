@@ -33,6 +33,24 @@ function handleSubmitParlay() {
         parlayData.push(returnCurrGame);
     }
     console.log(parlayData);
+    console.log("ABOUT TO FETCH TO STORE PARLAY");
+    fetch("/createParlay", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(parlayData),
+    })
+    .then((response) => {
+        if (response.ok) {
+            console.log("Parlay created successfully!");
+        } else {
+            console.log("Error creating parlay!");
+        }
+    })
+    .catch((error) => {
+        console.error(error);
+    });
     removeParlayFromScreen();
 }
 

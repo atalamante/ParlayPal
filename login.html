@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ParlayPal Login</title>
-    <link rel="stylesheet" type="text/css" href="login.css">
+    <link rel="stylesheet" type="text/css" href="/login.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 <body>
@@ -16,17 +16,17 @@
                 <header>Log In</header>
                 <form action="#">
                     <div class="field input-field">
-                        <input type="email" placeholder="Email" class="input">
+                        <input type="email" placeholder="Email" class="input" name = "emailInput">
                     </div>
                     <div class="field input-field">
-                        <input type="password" placeholder="Password" class="password">
+                        <input type="password" placeholder="Password" class="password" name = "passwordInput">
                         <i class = "bx bxs-hide eye-icon"></i>
                     </div>
                     <div class="form-link">
                         <a href="#" class = "forgot-pass">Forgot Password?</a>
                     </div>
-                    <div class="field button-field">
-                        <button>Log In</button>
+                    <div class="field button-field" id = "login-submit-button">
+                        <button type = "button">Log In</button>
                     </div>
                     <div class="form-link">
                         <span>New to Parlay Pal?<a href="./../signup/signup.html" class = "signup-link">Sign Up</a></span>
@@ -35,5 +35,6 @@
             </div>
         </div>
     </section>
+    <script src = "/login.js"></script>
 </body>
 </html>
