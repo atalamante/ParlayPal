@@ -242,6 +242,10 @@ app.get('/signup.html', (req, res) => {
     res.sendFile("E:\\BettingTrackerProject\\signup.html");
 });
 
+app.get("/myParlays.html", (req, res) => {
+    res.sendFile("E:\\BettingTrackerProject\\myParlays.html");
+});
+
 app.post('/signup', async (req, res) => {
     console.log("Inside /signup!");
     console.log(req.body);
@@ -319,6 +323,24 @@ app.post("/createParlay", async (req, res) => {
     await usersCollection.updateOne({_id: new ObjectId(userID)}, {$push: {parlays: parlayData}});
 
     res.sendStatus(200);
+});
+
+app.get("/activeParlays", async (req, res) => {
+    const db = client.db(dbName);
+    const usersCollection = db.collection("users");
+
+    const userID = req.session.userID;
+
+    console.log("userID: ", userID);
+
+    try {
+        const user = await usersCollection.findOne({"_id": new ObjectId(userID)});
+        const activeParlays = user.parlays.filter(parlay => parlay.parlayStatus === "active");
+        res.json(activeParlays);
+    } catch (error) {
+        console.error("Error retrieving active parlays: ", error);
+        res.status(500).json({error: "Failed to retrieve active parlays"});
+    }
 });
 
 app.listen(port);

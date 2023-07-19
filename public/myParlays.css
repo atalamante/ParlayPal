@@ -1,0 +1,227 @@
+:root {
+    --primary: #85BB65;
+    /* Pistachio */
+    --light: #FFEDE1;
+    /* Linen */
+    --dark: #28262C;
+    /* Raisin Black */
+  }
+  
+  * {
+    padding: 0;
+    margin: 0;
+    text-decoration: none;
+    list-style: none;
+    box-sizing: border-box;
+    /* background-color: #28262C; */
+  }
+
+  html, body {
+    min-height: 100%;
+  }
+  
+  body {
+    margin: 0;
+    background-color: var(--primary);
+  }  
+  
+  body {
+    font-family: montserrat;
+  }
+  
+  .container {
+    display: flex;
+    height: 100vh;
+    background-color: var(--primary);
+  }
+  
+  nav {
+    background: var(--dark);
+    height: 80px;
+    width: 100%;
+  }
+  
+  .parlay {
+    display: none;
+    width: 30%;
+    overflow-y: auto;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: var(--dark);
+  }
+  
+  label.logo {
+    color: var(--primary);
+    font-size: 35px;
+    line-height: 80px;
+    padding: 0 25px;
+    font-weight: bold;
+  }
+  
+  nav ul {
+    float: right;
+    margin-right: 20px;
+  }
+  
+  nav ul li {
+    display: inline-block;
+    line-height: 80px;
+    margin: 0 5px;
+  }
+  
+  nav ul li a {
+    color: var(--primary);
+    font-size: 17px;
+    text-transform: uppercase;
+  }
+  
+  a.active,
+  a:hover {
+    background-color: var(--light);
+    transition: .5s;
+  
+  }
+  
+  .tabs {
+    margin-bottom: 20px;
+  }
+  
+  .tab-links {
+    display: flex;
+    justify-content: flex-start;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .tab-link {
+    padding: 10px 20px;
+    background-color: #f0f0f0;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .tab-link.active {
+    border-bottom: 2px solid #000;
+  }
+  
+  .tab-content {
+    display: none;
+  }
+  
+  .tab-content.active {
+    display: block;
+  }
+  
+  .game-cards {
+    margin-top: 20px;
+  }
+  
+  .card {
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    padding: 20px;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .card.active {
+    background-color: #d1e9ff;
+  }
+  
+  .card.finished {
+    background-color: #e6e6e6;
+  }
+  
+  .card:hover {
+    transform: scale(1.01);
+  }
+  
+  .team-names {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .spread,
+  .time {
+    font-size: 14px;
+    margin-top: 10px;
+  }
+  
+  .score {
+    float: right;
+    font-weight: bold;
+    color: #555;
+    font-size: 20px;
+  }
+
+  .parlay-card {
+    background-color: var(--dark);
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    padding: 20px;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+  }
+  
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+  }
+  
+  .profile-dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  
+  .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    background-color: #f9f9f9;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    padding: 2px;
+    min-width: 150px;
+    z-index: 1;
+    display: none;
+  }
+  
+  .dropdown-menu.show {
+    display: block;
+  }
+  
+  .dropdown-menu ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .dropdown-menu li {
+    padding: 4px 8px;
+  }
+  
+  .dropdown-menu li a {
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+  }
+  
+  .dropdown-menu li a:hover {
+    color: #000;
+    background-color: #f2f2f2;
+  }
+  

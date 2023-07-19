@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parlay Pal - My Parlays</title>
+  <link rel="stylesheet" type="text/css" href="/myParlays.css" />
+</head>
+
+<body>
+  <nav>
+    <label class="logo">ParlayPal</label>
+    <div class="profile-dropdown">
+      <img src="https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg"
+        alt="Profile Picture" class="profile-pic" />
+      <div class="dropdown-menu">
+        <ul>
+          <li><a href="#">My Parlays</a></li>
+          <li><a href="#">Log Out</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="container">
+    <div class="my-parlays">
+      <div class="tabs">
+        <button class="tab-link active" data-tab="active">Active</button>
+        <button class="tab-link" data-tab="finished">Finished</button>
+      </div>
+      <div class="parlays-container">
+        <div class="parlays active-parlays">
+          <div class="parlay-cards">
+            <!-- Active parlay cards will be dynamically generated here -->
+          </div>
+        </div>
+        <div class="parlays finished-parlays">
+          <div class="parlay-cards">
+            <!-- Finished parlay cards will be dynamically generated here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="/myParlays.js"></script>
+</body>
+
+</html>

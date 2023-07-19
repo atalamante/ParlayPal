@@ -33,13 +33,14 @@ function handleSubmitParlay() {
         parlayData.push(returnCurrGame);
     }
     console.log(parlayData);
+    var actualParlayData = {parlayStatus: "active", games: parlayData};
     console.log("ABOUT TO FETCH TO STORE PARLAY");
     fetch("/createParlay", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(parlayData),
+        body: JSON.stringify(actualParlayData),
     })
     .then((response) => {
         if (response.ok) {
