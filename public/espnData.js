@@ -316,6 +316,24 @@ function tabEventHandlingSetup() {
     initialTab.click();
 }
 
+function toggleDropdown() {
+    const dropDownMenu = document.querySelector('.dropdown-menu');
+    dropDownMenu.classList.toggle('show');
+}
+
+document.addEventListener('click', function(event) {
+    const dropDownMenu = document.querySelector('.dropdown-menu');
+    const profileDropDown = document.querySelector('.profile-dropdown');
+    if (!profileDropDown.contains(event.target)) {
+        dropDownMenu.classList.remove('show');
+    }
+});
+
+const profilePic = document.querySelector('.profile-pic');
+profilePic.addEventListener('click', function(event) {
+    event.stopPropagation();
+    toggleDropdown();
+});
+
 const NBAGameList = [];
 tabEventHandlingSetup();
-// callAPISpecificTime();

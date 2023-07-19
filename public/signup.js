@@ -22,7 +22,7 @@ function signup() {
     .then(response => {
         if (response.ok) {
             console.log("User created successfully!");
-            window.location.href = "/";
+            window.location.href = "/main";
         } else {
             console.error("Error saving user!");
         }

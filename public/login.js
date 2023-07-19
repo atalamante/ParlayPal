@@ -20,7 +20,7 @@ function login() {
     .then(response => {
         if (response.ok) {
             console.log("User login successful!");
-            window.location.href = "/";
+            window.location.href = "/main";
         } else {
             console.error("Error logging in user!");
         }

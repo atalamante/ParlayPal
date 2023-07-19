@@ -222,8 +222,17 @@ app.get('/fetchWNBA', async (req, res) => {
 });
 
 app.get('/', (req, res) => {
-    res.sendFile('E:\\BettingTrackerProject\\index.html');
+    console.log("UserID: ", req.session.userID);
+    if (req.session.userID) {
+        res.redirect("/main");
+    } else {
+        res.sendFile('E:\\BettingTrackerProject\\landing.html');
+    }
 });
+
+app.get("/main", (req, res) => {
+    res.sendFile('E:\\BettingTrackerProject\\index.html');
+})
 
 app.get('/login.html', (req, res) => {
     res.sendFile("E:\\BettingTrackerProject\\login.html");
@@ -254,7 +263,7 @@ app.post('/signup', async (req, res) => {
 
         req.session.userID = newUser._id;
 
-        return res.redirect('/');
+        return res.redirect('/main');
         // return res.status(201).json({message: "User created successfully!"});
     } catch (error) {
         console.error("Error saving user: ", error);
@@ -279,7 +288,7 @@ app.post("/login", async (req, res) => {
 
         req.session.userID = existingUser._id;
 
-        return res.redirect('/');
+        return res.redirect('/main');
     } catch (error) {
         console.error("Error during login: ", error);
         return res.status(500).json({error: "Failed to login user!"});
