@@ -259,6 +259,27 @@ function dynamicGameCards(sportSpecificList, sport) {
     }
 }
 
+async function fetchGamesFromDatabase(sport, date) {
+    try {
+        const response = await fetch(`/getGames?sport=${sport}&date=${date}`);
+        const games = await response.json();
+        return games;
+    } catch (error) {
+        console.error(`Error fetching ${date} ${sport} games: `, error);
+        return [];
+    }
+}
+
+function getDate() {
+    var today = new Date()
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1);
+    var yyyy = today.getFullYear();
+    // Proper Format: yyyymmdd
+    let properDateFormat = mm + "/" + dd + "/" + yyyy;
+    return properDateFormat;
+}
+
 async function switchingTabs(event) {
     const tabClicked = event.target;
     const sport = tabClicked.dataset.sport;
@@ -277,22 +298,13 @@ async function switchingTabs(event) {
 
     // Retrieve the game array based on the selected sport and generate game cards
     let gameArray;
+    let todayDate = getDate();
     switch (sport) {
         case 'nba':
-            // gameArray = NBAGameList;
-            gameArray = await makeCallToFetchX(sport.toUpperCase());
-            break;
         case 'mlb':
-            // gameArray = MLBGameList;
-            gameArray = await makeCallToFetchX(sport.toUpperCase());
-            break;
         case 'nhl':
-            // gameArray = NHLGameList;
-            gameArray = await makeCallToFetchX(sport.toUpperCase());
-            break;
         case 'wnba':
-            // gameArray = WNBAGameList;
-            gameArray = await makeCallToFetchX(sport.toUpperCase());
+            gameArray = await fetchGamesFromDatabase(sport, todayDate);
             break;
         default:
             gameArray = [];

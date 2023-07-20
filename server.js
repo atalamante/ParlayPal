@@ -1,11 +1,9 @@
 import fetch from "node-fetch";
 import mongoose from "mongoose";
 import express from "express";
-import path from "path";
-import SingleGame from "./models/singleGame.js";
-import Game from "./models/game.js";
 import {MongoClient, ObjectId} from "mongodb";
 import session from "express-session";
+import {v4 as uuidv4} from "uuid";
 
 const pathForNBAScores = "http://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates="
 const pathForMLBScores = "http://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard?dates="
@@ -20,6 +18,8 @@ const client = new MongoClient(url);
 
 const app = express();
 const port = 5500;
+
+const currSportsList = ["nba", "mlb", "nhl", "wnba"];
 
 app.use(session({
     secret: "aaronSecret",
@@ -55,16 +55,67 @@ function getDate() {
     var mm = String(today.getMonth() + 1).padStart(2, '0');
     var yyyy = today.getFullYear();
     // Proper Format: yyyymmdd
-    let properDateFormat = yyyy + mm + "18";
+    let properDateFormat = yyyy + mm + dd;
     return properDateFormat;
 }
 
+function getPathForSport(sport) {
+    switch (sport) {
+        case "nba":
+            return pathForNBAScores;
+        case "mlb":
+            return pathForMLBScores;
+        case "nhl":
+            return pathForNHLScores;
+        case "wnba":
+            return pathForWNBAScores;
+        default:
+            throw new Error(`Invalid sport: ${sport}`);
+    }
+}
+
 async function parseGameSlates(sportSpecificPath, sportSpecificList, sport) {
+
+    const db = client.db(dbName);
+    const gamesCollection = db.collection("games");
+
     let sportGameSlateInfo = await getScores(sportSpecificPath);
     console.log("sportGameSlateInfo: ", sportGameSlateInfo);
     for (var game = 0; game < sportGameSlateInfo.length; game++) {
         // sportSpecificList.push(createGameObjects(sportGameSlateInfo[game], sport));
         let gameData = createGameObjects(sportGameSlateInfo[game], sport);
+
+        let apiID = gameData["apiID"];
+
+        const existingGameCheck = await gamesCollection.findOne({apiID});
+
+        if (!existingGameCheck) {
+            await gamesCollection.insertOne(gameData);
+        } else {
+            const currentSpread = gameData.spread;
+            const existingSpread = existingGameCheck.spread;
+            if (currentSpread !== existingSpread && currentSpread !== "-----") {
+                await gamesCollection.updateOne({apiID}, {
+                    $set: {
+                        homeTeamScore: gameData.homeTeamScore,
+                        awayTeamScore: gameData.awayTeamScore,
+                        status: gameData.status,
+                        winner: null,
+                        spread: currentSpread
+                    }
+                });
+            } else {
+                await gamesCollection.updateOne({apiID}, {
+                    $set: {
+                        homeTeamScore: gameData.homeTeamScore,
+                        awayTeamScore: gameData.awayTeamScore,
+                        status: gameData.status,
+                        winner: null
+                    }
+                });
+            }
+        }
+
         sportSpecificList.push(gameData);
         // await updateGameInDatabase(gameData);
     }
@@ -82,13 +133,15 @@ function createGameObjects(currGame, specificSport) {
         var spreadHolder = "-----";
     }
     let gametime = new Date(currGame.date);
+    let uniqueID = uuidv4();
+    let espnGameID = currGame.uid;
     switch (currGame.status.type.id) {
         case "1": // Scheduled Game. Hasn't started yet.
             var currGameObject = {
                 sport: specificSport, date: gametime.toLocaleDateString(), homeTeam: currGame.competitions[0].competitors[0].team.displayName, awayTeam: currGame.competitions[0].competitors[1].team.displayName,
                 startTime: gametime.toLocaleTimeString('en-US'),spread: spreadHolder,
                 status: currGame.status.type.id,
-                homeTeamScore: 0, awayTeamScore: 0, shortName: currGame.shortName, winner: null
+                homeTeamScore: 0, awayTeamScore: 0, shortName: currGame.shortName, winner: null, gameID: uniqueID, apiID: espnGameID
             };
             break;
         case "2": // Live Game
@@ -98,7 +151,7 @@ function createGameObjects(currGame, specificSport) {
                 sport: specificSport, date: gametime.toLocaleDateString(), homeTeam: currGame.competitions[0].competitors[0].team.displayName, awayTeam: currGame.competitions[0].competitors[1].team.displayName,
                 startTime: gametime.toLocaleTimeString('en-US'),spread: spreadHolder,
                 status: currGame.status.type.id,
-                homeTeamScore: homeScore, awayTeamScore: awayScore, shortName: currGame.shortName, winner: null
+                homeTeamScore: homeScore, awayTeamScore: awayScore, shortName: currGame.shortName, winner: null, gameID: uniqueID, apiID: espnGameID
             };
             break;
         case "3": // Completed. 
@@ -108,7 +161,7 @@ function createGameObjects(currGame, specificSport) {
                 sport: specificSport, date: gametime.toLocaleDateString(), homeTeam: currGame.competitions[0].competitors[0].team.displayName, awayTeam: currGame.competitions[0].competitors[1].team.displayName,
                 startTime: gametime.toLocaleTimeString('en-US'),spread: spreadHolder,
                 status: currGame.status.type.id,
-                homeTeamScore: homeScore, awayTeamScore: awayScore, shortName: currGame.shortName, winner: null
+                homeTeamScore: homeScore, awayTeamScore: awayScore, shortName: currGame.shortName, winner: null, gameID: uniqueID, apiID: espnGameID
             };
             break;
         // case "4":
@@ -129,45 +182,19 @@ function createGameObjects(currGame, specificSport) {
                     sport: specificSport, date: gametime.toLocaleDateString(), homeTeam: currGame.competitions[0].competitors[0].team.displayName, awayTeam: currGame.competitions[0].competitors[1].team.displayName,
                     startTime: gametime.toLocaleTimeString('en-US'),spread: spreadHolder,
                     status: currGame.status.type.id,
-                    homeTeamScore: homeScore, awayTeamScore: awayScore, shortName: currGame.shortName, winner: null
+                    homeTeamScore: homeScore, awayTeamScore: awayScore, shortName: currGame.shortName, winner: null, gameID: uniqueID, apiID: espnGameID
                 };
             } else {
                 var currGameObject = {
                     sport: specificSport, date: gametime.toLocaleDateString(), homeTeam: currGame.competitions[0].competitors[0].team.displayName, awayTeam: currGame.competitions[0].competitors[1].team.displayName,
                     startTime: gametime.toLocaleTimeString('en-US'),spread: spreadHolder,
                     status: currGame.status.type.id,
-                    homeTeamScore: "0", awayTeamScore: "0", shortName: currGame.shortName, winner: null
+                    homeTeamScore: "0", awayTeamScore: "0", shortName: currGame.shortName, winner: null, gameID: uniqueID, apiID: espnGameID
                 };
             }
             break;
     }
     return currGameObject;
-}
-
-
-// TODO: In this file, create handlers for /fetchGamesX where X could be NBA, NFL, MLB, etc. In this handler, I will call the code that reads from ESPN API. Then, with this new 
-// data, add or update to the database. 
-
-async function updateGameInDatabase(game) {
-    try {
-      // Connect to the MongoDB server
-      await client.connect();
-  
-      // Access the database
-      const db = client.db(dbName);
-  
-      // Access the collection
-      const collection = db.collection(collectionName);
-
-      collection.insertOne(game, function(err, res) {
-        if (err) throw err;
-        console.log(`${game.shortName} was inserted!`);
-      })
-  
-    //   console.log('Game updated in the database.');
-    } catch (err) {
-      console.error('Error updating game in the database:', err);
-    }
 }
 
 app.use(express.static('E:\\BettingTrackerProject\\public'));
@@ -186,13 +213,14 @@ app.get('/fetchNBA', async (req, res) => {
 });
 
 app.get('/fetchMLB', async (req, res) => {
+    console.log("Made it into fetchMLB");
     try {
         const MLBGameList = [];
         await parseGameSlates(pathForMLBScores, MLBGameList, "mlb");
-        // console.log("MLB Game List: ", MLBGameList);
+        console.log("MLB Game List in fetchMLB: ", MLBGameList);
         res.send(MLBGameList);
     } catch (error) {
-        console.error("Error fetching MLB games: ", error);
+        console.error("Error fetching MLB games in fetchMLB: ", error);
         res.status(500).send("Error occurred while fetching MLB games!");
     }
 });
@@ -212,7 +240,7 @@ app.get('/fetchNHL', async (req, res) => {
 app.get('/fetchWNBA', async (req, res) => {
     try {
         const WNBAGameList = [];
-        await parseGameSlates(pathForWNBAScores, WNBAGameList, "nhl");
+        await parseGameSlates(pathForWNBAScores, WNBAGameList, "wnba");
         // console.log("MLB Game List: ", WNBAGameList);
         res.send(WNBAGameList);
     } catch (error) {
@@ -230,9 +258,18 @@ app.get('/', (req, res) => {
     }
 });
 
-app.get("/main", (req, res) => {
+app.get("/main", async (req, res) => {
+    try {
+        for (const sport of currSportsList) {
+            const gameList = [];
+            await parseGameSlates(getPathForSport(sport), gameList, sport);
+            console.log(`${sport.toUpperCase()} Game List in main: `, gameList);
+        }
+    } catch (error) {
+        console.error("Error fetching MLB games in /main: ", error);
+    }
     res.sendFile('E:\\BettingTrackerProject\\index.html');
-})
+});
 
 app.get('/login.html', (req, res) => {
     res.sendFile("E:\\BettingTrackerProject\\login.html");
@@ -256,7 +293,7 @@ app.post('/signup', async (req, res) => {
     const usersCollection = db.collection("users");
 
     try {
-        const existingUser = await  usersCollection.findOne({email});
+        const existingUser = await usersCollection.findOne({email});
         if (existingUser) {
             return res.status(400).json({error: "User already exists!"});
         }
@@ -340,6 +377,29 @@ app.get("/activeParlays", async (req, res) => {
     } catch (error) {
         console.error("Error retrieving active parlays: ", error);
         res.status(500).json({error: "Failed to retrieve active parlays"});
+    }
+});
+
+app.get("/getGames", async (req, res) => {
+    console.log("Inside getGames");
+    try {
+        const db = client.db(dbName);
+        const gamesCollection = db.collection("games");
+
+        const {sport, date} = req.query;
+
+        console.log(sport, date);
+
+        const gamesCursor = await gamesCollection.find({sport: sport, date: date});
+
+        const games = await gamesCursor.toArray();
+
+        console.log("Games inside getGames: ", games);
+        
+        res.json(games);
+    } catch (error) {
+        console.error("Error fetching games: ", error);
+        res.status(500).send("Error occurred while fetching games!");
     }
 });
 
