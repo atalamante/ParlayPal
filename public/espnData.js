@@ -206,6 +206,7 @@ function dynamicGameCards(sportSpecificList, sport) {
     for (const game of sportSpecificList) {
         const singleCard = document.createElement("div");
         singleCard.classList.add("card");
+        singleCard.setAttribute("data-game-id", game.apiID);
         if (game.status == "1") {
             singleCard.classList.add("scheduled");
         } else if (game.status == "2") {
@@ -348,5 +349,46 @@ profilePic.addEventListener('click', function(event) {
     toggleDropdown();
 });
 
+async function updateGames() {
+    try {
+        const response = await fetch ("/updateGames");
+        const updatedGames = await response.json();
+        return updatedGames;
+    } catch (error) {
+        console.error("Error fetching updated games: ", error);
+        throw error;
+    }
+}
+
+async function updateGameCardsDynamically() {
+    try {
+        const gamesList = [];
+        const updatedGames = await updateGames();
+        for (const game of updatedGames) {
+            const specificCard = document.querySelector(`.tab-content[data-sport="${game.sport}"] .card[data-game-id = "${game.apiID}"]`);
+            if (specificCard) {
+                const gameStatus = game.status === "1" ? "scheduled" : game.status === "2" ? "active": "finished";
+                specificCard.className = "card";
+                specificCard.classList.add(gameStatus);
+
+                specificCard.querySelector(".team-names").textContent = `${game.awayTeam} vs ${game.homeTeam}`;
+
+                specificCard.querySelector(".short-team-names").textContent = game.shortName;
+
+                const spreadText = game.spread === "-----" ? "Spread: -----" : `Spread: ${game.spread}`;
+                specificCard.querySelector(".spread").textContent = spreadText;
+
+                specificCard.querySelector(".time").textContent = `Time: ${game.startTime}`; 
+
+                const currScore = game.status === "2" || game.status === "3" ? `Score: ${game.awayTeamScore} - ${game.homeTeamScore}` : "";
+                specificCard.querySelector(".score").textContent = currScore;
+            }
+        }
+    } catch (error) {
+        console.error("Error updating game cards: ", error);
+    }
+}
+
 const NBAGameList = [];
 tabEventHandlingSetup();
+setInterval(updateGameCardsDynamically, 1 * 60 * 1000);

@@ -80,7 +80,7 @@ async function parseGameSlates(sportSpecificPath, sportSpecificList, sport) {
     const gamesCollection = db.collection("games");
 
     let sportGameSlateInfo = await getScores(sportSpecificPath);
-    console.log("sportGameSlateInfo: ", sportGameSlateInfo);
+    // console.log("sportGameSlateInfo: ", sportGameSlateInfo);
     for (var game = 0; game < sportGameSlateInfo.length; game++) {
         // sportSpecificList.push(createGameObjects(sportGameSlateInfo[game], sport));
         let gameData = createGameObjects(sportGameSlateInfo[game], sport);
@@ -400,6 +400,21 @@ app.get("/getGames", async (req, res) => {
     } catch (error) {
         console.error("Error fetching games: ", error);
         res.status(500).send("Error occurred while fetching games!");
+    }
+});
+
+app.get("/updateGames",async (req, res) => {
+    try {
+        const allGames = [];
+        for (const sport of currSportsList) {
+            const gameList = [];
+            await parseGameSlates(getPathForSport(sport), gameList, sport);
+            console.log(`${sport.toUpperCase()} Game List in updateGames: `, gameList);
+            allGames.push(...gameList);
+        }
+        res.json(allGames);
+    } catch (error) {
+        console.error("Error fetching games in /updateGames: ", error);
     }
 });
 
