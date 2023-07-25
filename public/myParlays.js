@@ -5,13 +5,34 @@ async function makeCallForParlays(status) {
     return data;
 }
 
-function dynamicParlayCards(parlayData, parlayStatus) {
+async function updateGames() {
+    try {
+        const response = await fetch ("/updateGames");
+        const updatedGames = await response.json();
+        return updatedGames;
+    } catch (error) {
+        console.error("Error fetching updated games: ", error);
+        throw error;
+    }
+}
+
+async function dynamicParlayCards(parlayData, parlayStatus) {
     const containerForGameCards = document.querySelector(`.${parlayStatus}-parlays .parlay-cards`);
     console.log("Parlay Data (inside dyanmic): ", parlayData);
+
     for (const singleParlay of parlayData) {
+
+        const parlayID = singleParlay.parlayID;
+        
+        const response = await fetch(`/getParlayInfo/${parlayID}`);
+        const parlayDetails = await response.json();
+
+        console.log("PARLAY DETAILS FROM FETCH: ", parlayDetails);
+
         const parlayCard = document.createElement("div");
         parlayCard.classList.add("parlay-card");
-        for (const parlay of singleParlay.games) {
+
+        for (const parlay of parlayDetails.games) {
             console.log("Single Parlay: ", parlay);
             const singleCard = document.createElement("div");
             singleCard.classList.add("card");
@@ -33,7 +54,15 @@ function dynamicParlayCards(parlayData, parlayStatus) {
 
             const spread = document.createElement("p");
             spread.classList.add("Bet:");
-            spread.textContent = `Bet: ${parlay.betType}` + " " + `${parlay.betValue}`;
+            let betType;
+            let betValue;
+            const matchingGame = parlayDetails["0"]["games"].find((game) => game["gameID"] === parlay.gameID);
+            if (matchingGame) {
+                betType = matchingGame["betType"];
+                betValue = matchingGame["betValue"];
+                spread.textContent = `Bet: ${betType}` + " " + `${betValue}`;
+            }
+            // spread.textContent = `Bet: ${betType}` + " " + `${betValue}`;
 
             const gameTime = document.createElement("p");
             gameTime.classList.add("time");
@@ -116,4 +145,33 @@ function setupEventHandlingForTabs() {
     initialTab.click();
 }
 
-setupEventHandlingForTabs();
+async function refreshParlays() {
+    console.log("REFRESHING PARLAYS IN REFRESHPARLAY");
+    try {
+        const updatedGames = await updateGames();
+
+        console.log("UDPATED GAMES FORM UPDATEGAMES IN REFRESHPARLAY: ", updatedGames);
+
+        const activeParlays = await makeCallForParlays("active");
+
+        const activeParlaysContainer = document.querySelector(".active-parlays .parlay-cards");
+        activeParlaysContainer.innerHTML = '';
+        dynamicParlayCards(activeParlays, "active");
+
+        // const finishedParlays = await makeCallForParlays("finished");
+
+        // const finishedParlaysContainer = document.querySelector(".finished-parlays .parlay-cards");
+        // finishedParlaysContainer.innerHTML = '';
+        // dynamicParlayCards(finishedParlays, "finished");
+    } catch (error) {
+        console.error("Error updating and refreshing parlays: ", error);
+    }
+}
+
+function mainForParlays() {
+    refreshParlays();
+    setInterval(refreshParlays, 1*60*1000);
+}
+
+// setupEventHandlingForTabs();
+mainForParlays();

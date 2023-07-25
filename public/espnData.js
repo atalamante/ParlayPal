@@ -30,9 +30,12 @@ function handleSubmitParlay() {
         returnCurrGame["betType"] = betType;
         returnCurrGame["betValue"] = betValue;
 
-        parlayData.push(returnCurrGame);
+        let simpleGameInfo = {"gameID": game.gameID, "betType": betType, "betValue": betValue};
+
+        // parlayData.push(returnCurrGame);
+        parlayData.push(simpleGameInfo);
     }
-    console.log(parlayData);
+    console.log("PARLAY DATA: ", parlayData);
     var actualParlayData = {parlayStatus: "active", games: parlayData};
     console.log("ABOUT TO FETCH TO STORE PARLAY");
     fetch("/createParlay", {
@@ -250,8 +253,9 @@ function dynamicGameCards(sportSpecificList, sport) {
             const awayTeam = game.awayTeam;
             const spread = game.spread;
             const startTime = game.startTime;
+            const gameID = game.gameID;
 
-            console.log(`Clicked card: ${awayTeam} vs ${homeTeam}, Spread: ${spread}, Start Time: ${startTime}`, `Score: ${game.awayTeamScore} - ${game.homeTeamScore}`);
+            console.log(`Clicked card: ${awayTeam} vs ${homeTeam}, Spread: ${spread}, Start Time: ${startTime}`, `Score: ${game.awayTeamScore} - ${game.homeTeamScore}`, `ID: ${gameID}`);
             console.log("Before addToParlay: ", game);
             addToParlay(game);
         })
@@ -364,9 +368,11 @@ async function updateGameCardsDynamically() {
     try {
         const gamesList = [];
         const updatedGames = await updateGames();
+        console.log("UPDATED GAMES!", updatedGames);
         for (const game of updatedGames) {
             const specificCard = document.querySelector(`.tab-content[data-sport="${game.sport}"] .card[data-game-id = "${game.apiID}"]`);
             if (specificCard) {
+                console.log("Specific Card: ", game.shortName);
                 const gameStatus = game.status === "1" ? "scheduled" : game.status === "2" ? "active": "finished";
                 specificCard.className = "card";
                 specificCard.classList.add(gameStatus);
@@ -375,8 +381,25 @@ async function updateGameCardsDynamically() {
 
                 specificCard.querySelector(".short-team-names").textContent = game.shortName;
 
-                const spreadText = game.spread === "-----" ? "Spread: -----" : `Spread: ${game.spread}`;
-                specificCard.querySelector(".spread").textContent = spreadText;
+                // const spreadText = game.spread === "-----" ? "Spread: -----" : `Spread: ${game.spread}`;
+                // specificCard.querySelector(".spread").textContent = spreadText;
+
+                const spreadElement = specificCard.querySelector(".spread");
+                const currentSpreadBeingShown = spreadElement.textContent.trim();
+
+                console.log("CURRENT SPREAD BEING SHOWN: ", currentSpreadBeingShown);
+
+                spreadElement.textContent = "";
+
+                if (game.spread === "-----" && currentSpreadBeingShown != "-----") {
+                    spreadElement.textContent = `Spread: ${currentSpreadBeingShown}`;
+                } else if (game.spread != "-----" && currentSpreadBeingShown != "-----") {
+                    spreadElement.textContent = `Spread: ${game.spread}`;
+                } else if (game.spread != "-----" && currentSpreadBeingShown === "-----") {
+                    spreadElement.textContent = `Spread: ${game.spread}`;
+                } else if (game.spread === "-----" && currentSpreadBeingShown === "-----") {
+                    spreadElement.textContent = `Spread: ${game.spread}`;
+                }
 
                 specificCard.querySelector(".time").textContent = `Time: ${game.startTime}`; 
 

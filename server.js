@@ -93,7 +93,9 @@ async function parseGameSlates(sportSpecificPath, sportSpecificList, sport) {
             await gamesCollection.insertOne(gameData);
         } else {
             const currentSpread = gameData.spread;
+            console.log(`New Spread for ${gameData.shortName}: `, gameData.spread);
             const existingSpread = existingGameCheck.spread;
+            console.log(`Existing Spread for ${gameData.shortName}: `, existingSpread);
             if (currentSpread !== existingSpread && currentSpread !== "-----") {
                 await gamesCollection.updateOne({apiID}, {
                     $set: {
@@ -113,6 +115,7 @@ async function parseGameSlates(sportSpecificPath, sportSpecificList, sport) {
                         winner: null
                     }
                 });
+                gameData.spread = existingSpread;
             }
         }
 
@@ -351,6 +354,8 @@ app.post("/createParlay", async (req, res) => {
 
     const parlayData = req.body;
 
+    parlayData["parlayID"] = uuidv4();
+
     console.log(parlayData);
 
     console.log("User Parlays: ", user.parlays);
@@ -415,6 +420,36 @@ app.get("/updateGames",async (req, res) => {
         res.json(allGames);
     } catch (error) {
         console.error("Error fetching games in /updateGames: ", error);
+    }
+});
+
+app.get("/getParlayInfo/:parlayID", async (req, res) => {
+    try {
+        const {parlayID} = req.params;
+
+        const db = client.db(dbName);
+        const usersCollection = db.collection("users");
+
+        const userID = req.session.userID;
+        const user = await usersCollection.findOne({"_id": new ObjectId(userID)});
+
+        const parlay = user.parlays.filter(parlay => parlay.parlayID === parlayID);
+        if (!parlay) {
+            return res.status(404).json({error: "Parlay not found!"});
+        }
+
+        const parlayGameIDs = parlay[0].games.map((game) => game.gameID);
+        const gamesCollection = db.collection("games");
+        const games = await gamesCollection.find({gameID: {$in: parlayGameIDs}}).toArray();
+
+        const detailsToReturn = {
+            ...parlay, games:games
+        };
+
+        res.json(detailsToReturn);
+    } catch (error) {
+        console.error("Error fetching parlay details: ", error);
+        res.status(500).json({error: "Error occurred while fetching parlay details!"});
     }
 });
 
