@@ -18,10 +18,12 @@ function handleSubmitParlay() {
         const game = currGame[0];
 
         let typeCheck = `bet-type-${game.shortName}`;
+        let teamCheck = `team-select-${game.shortName}`;
         let valueCheck = `bet-value-${game.shortName}`;
 
         const betType = document.querySelector(`[name = "${typeCheck}"]`).value;
-        // const betType = selectInput.value;
+        
+        const betTeam = document.querySelector(`[name = "${teamCheck}"]`).value;
 
         const betValue = document.querySelector(`[name = "${valueCheck}"]`).value;
 
@@ -30,13 +32,13 @@ function handleSubmitParlay() {
         returnCurrGame["betType"] = betType;
         returnCurrGame["betValue"] = betValue;
 
-        let simpleGameInfo = {"gameID": game.gameID, "betType": betType, "betValue": betValue};
+        let simpleGameInfo = {"gameID": game.gameID, "betType": betType, "betValue": betValue, "betTeam": betTeam};
 
         // parlayData.push(returnCurrGame);
         parlayData.push(simpleGameInfo);
     }
     console.log("PARLAY DATA: ", parlayData);
-    var actualParlayData = {parlayStatus: "active", games: parlayData};
+    var actualParlayData = {parlayStatus: "active", dateMade: getDate() ,games: parlayData};
     console.log("ABOUT TO FETCH TO STORE PARLAY");
     fetch("/createParlay", {
         method: "POST",
@@ -83,6 +85,34 @@ function createTextInput(inputName) {
     input.name = inputName;
     input.maxLength = 10;
     return input;
+}
+
+function createSelectTeam(game) {
+    console.log("GAME:::::" , game);
+    console.log("HOMETEAM: ", game[0].homeTeam);
+    console.log("AWAYTEAM: ", game[0].awayTeam);
+    const teamSelectLabel = document.createElement("label");
+    teamSelectLabel.textContent = "Choose Team:";
+    const teamSelectInput = document.createElement("select");
+    teamSelectInput.name = `team-select-${game[0].shortName}`;
+
+    const homeTeamOption = document.createElement("option");
+    console.log("HOMETEAM: ", game[0].homeTeam);
+    homeTeamOption.value = game[0].homeTeam;
+    homeTeamOption.textContent = game[0].homeTeam;
+    const awayTeamOption = document.createElement("option");
+    awayTeamOption.value = game[0].awayTeam;
+    awayTeamOption.textContent = game[0].awayTeam;
+
+    teamSelectInput.appendChild(homeTeamOption);
+    teamSelectInput.appendChild(awayTeamOption);
+
+    const teamSelectContainer = document.createElement("div");
+    teamSelectContainer.classList.add("grid-row");
+    teamSelectContainer.appendChild(teamSelectLabel);
+    teamSelectContainer.appendChild(teamSelectInput);
+
+    return teamSelectContainer;
 }
 
 function updateParlayDisplay() {
@@ -160,13 +190,16 @@ function updateParlayDisplay() {
         rowA.appendChild(selectLabel);
         rowA.appendChild(selectInput);
 
-        const rowB = document.createElement("div");
-        rowB.classList.add("grid-row");
-        rowB.appendChild(inputLabel);
-        rowB.appendChild(inputValue);
+        const rowB = createSelectTeam(currGame);
+
+        const rowC = document.createElement("div");
+        rowC.classList.add("grid-row");
+        rowC.appendChild(inputLabel);
+        rowC.appendChild(inputValue);
 
         gridContainer.appendChild(rowA);
         gridContainer.appendChild(rowB);
+        gridContainer.appendChild(rowC);
 
         parlayItem.appendChild(nameOfTeams);
         parlayItem.appendChild(shortNameTeams);
@@ -381,17 +414,20 @@ async function updateGameCardsDynamically() {
 
                 specificCard.querySelector(".short-team-names").textContent = game.shortName;
 
-                // const spreadText = game.spread === "-----" ? "Spread: -----" : `Spread: ${game.spread}`;
-                // specificCard.querySelector(".spread").textContent = spreadText;
-
                 const spreadElement = specificCard.querySelector(".spread");
-                const currentSpreadBeingShown = spreadElement.textContent.trim();
-
-                console.log("CURRENT SPREAD BEING SHOWN: ", currentSpreadBeingShown);
+                let currentSpreadBeingShown = spreadElement.textContent.trim();
+                currentSpreadBeingShown = currentSpreadBeingShown.split(" ");
+                if (currentSpreadBeingShown[1] === "-----" || currentSpreadBeingShown[1] === "EVEN") {
+                    currentSpreadBeingShown = currentSpreadBeingShown[1];
+                } else {
+                    currentSpreadBeingShown = currentSpreadBeingShown[1] + " " + currentSpreadBeingShown[2];
+                }
 
                 spreadElement.textContent = "";
 
-                if (game.spread === "-----" && currentSpreadBeingShown != "-----") {
+                console.log(game.spread, currentSpreadBeingShown);
+
+                if (game.spread === "-----" && currentSpreadBeingShown !== "-----") {
                     spreadElement.textContent = `Spread: ${currentSpreadBeingShown}`;
                 } else if (game.spread != "-----" && currentSpreadBeingShown != "-----") {
                     spreadElement.textContent = `Spread: ${game.spread}`;
